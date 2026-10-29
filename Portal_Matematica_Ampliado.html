@@ -1,0 +1,1072 @@
+
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Estudio de Matemáticas - Curso Completo</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .code-font { font-family: 'Fira Code', monospace; }
+        .katex-display { margin: 0.5em 0; overflow-x: auto; overflow-y: hidden; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+        .dark ::-webkit-scrollbar-thumb { background: #334155; }
+        .intro-hero { background: radial-gradient(circle at top right, rgba(14,165,233,.24), transparent 38%), linear-gradient(135deg,#0f172a,#172554 58%,#0c4a6e); }
+        .enhanced-panel { border:1px solid rgba(14,165,233,.25); border-radius:1rem; padding:1.1rem; margin-top:1rem; background:rgba(14,165,233,.055); }
+        .visual-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1rem; margin-top:1rem; }
+        .visual-card { border:1px solid #cbd5e1; border-radius:1rem; padding:1rem; background:rgba(255,255,255,.78); color:#1e293b; }
+        .dark .visual-card { border-color:#334155; background:rgba(15,23,42,.65); color:#e2e8f0; }
+        .visual-card svg { width:100%; height:auto; display:block; }
+        .calc-extra { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.45rem; }
+        .calc-extra button { padding:.65rem .25rem; border-radius:.65rem; background:rgba(14,165,233,.12); color:inherit; font-size:.8rem; font-weight:700; }
+        .calc-extra button:hover { background:rgba(14,165,233,.25); }
+        .intro-hero h2 { color:white; }
+        .intro-hero p { color:#dbeafe; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-800/90 backdrop-blur border-b border-slate-200 dark:border-slate-700 px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <button id="toggle-sidebar" class="md:hidden text-slate-600 dark:text-slate-300 hover:text-brand-500 p-2 rounded-lg">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+            <div class="flex items-center gap-2">
+                <div class="bg-brand-600 text-white p-2 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/30">
+                    <i class="fa-solid fa-calculator text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-none">MathPortal</h1>
+                    <span class="text-xs text-slate-500 dark:text-slate-400">Resumen Anual de Matemáticas</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="hidden sm:flex items-center flex-1 max-w-md mx-6 relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 text-slate-400"></i>
+            <input type="text" id="global-search" placeholder="Buscar módulo, concepto o fórmula..." 
+                   class="w-full pl-9 pr-4 py-1.5 text-sm rounded-xl bg-slate-100 dark:bg-slate-700/60 border border-transparent focus:border-brand-500 focus:outline-none transition-all">
+            <div id="search-results" class="hidden absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl max-h-80 overflow-y-auto z-50"></div>
+        </div>
+
+        <!-- Controls -->
+        <div class="flex items-center gap-2">
+            <button id="btn-open-flashcards" class="p-2 px-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition text-sm flex items-center gap-2">
+                <i class="fa-solid fa-clone"></i>
+                <span class="hidden md:inline">Flashcards</span>
+            </button>
+            <button id="btn-open-calc" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm flex items-center gap-2 transition" title="Calculadora Flotante">
+                <i class="fa-solid fa-calculator text-brand-500"></i>
+                <span class="hidden md:inline">Calculadora</span>
+            </button>
+            <button id="theme-toggle" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm transition" title="Cambiar tema">
+                <i class="fa-solid fa-sun dark:hidden text-amber-500"></i>
+                <i class="fa-solid fa-moon hidden dark:inline text-indigo-400"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-20 w-72 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out mt-[57px] md:mt-0">
+            <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                <h2 class="font-semibold text-xs uppercase tracking-wider text-slate-400">Módulos del Año</h2>
+                <span id="progress-stat" class="text-xs bg-brand-100 dark:bg-brand-900/50 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-full font-medium">0/10 Dominados</span>
+            </div>
+            
+            <div id="topics-list" class="flex-1 overflow-y-auto p-3 space-y-1">
+                <!-- Topics rendered dynamically -->
+            </div>
+
+            <div class="p-3 border-t border-slate-200 dark:border-slate-700 text-xs text-center text-slate-400">
+                Progreso guardado automáticamente
+            </div>
+        </aside>
+
+        <!-- Overlay for mobile sidebar -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-10 hidden md:hidden"></div>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col overflow-y-auto bg-slate-50 dark:bg-slate-900 p-4 sm:p-6 md:p-8">
+            <section id="study-intro" class="intro-hero max-w-4xl mx-auto w-full rounded-3xl p-6 sm:p-8 shadow-lg">
+                <div class="max-w-3xl">
+                    <span class="inline-flex rounded-full bg-sky-400/20 text-sky-200 px-3 py-1 text-xs font-bold tracking-wide uppercase">Guía de estudio interactiva</span>
+                    <h2 class="text-2xl sm:text-4xl font-bold mt-4">Matemática, paso a paso</h2>
+                    <p class="mt-3 text-sm sm:text-base leading-relaxed">Este portal reúne diez módulos para estudiar con explicaciones, fórmulas, ejemplos resueltos y ejercicios. La idea no es memorizar fórmulas sin entenderlas: primero identificá qué te pide el problema, después elegí la herramienta adecuada y finalmente comprobá el resultado.</p>
+                    <div class="grid sm:grid-cols-3 gap-3 mt-6">
+                        <div class="rounded-xl bg-white/10 p-3"><b class="text-white">1. Comprendé</b><p class="text-sm mt-1">Leé las definiciones y mirá qué significa cada símbolo.</p></div>
+                        <div class="rounded-xl bg-white/10 p-3"><b class="text-white">2. Mirá ejemplos</b><p class="text-sm mt-1">Seguí las cuentas en orden y justificá cada paso.</p></div>
+                        <div class="rounded-xl bg-white/10 p-3"><b class="text-white">3. Practicá</b><p class="text-sm mt-1">Intentá resolver antes de revelar la solución.</p></div>
+                    </div>
+                    <p class="mt-4 text-xs text-sky-100">Consejo: usá el menú de módulos, la búsqueda, las tarjetas de repaso y la calculadora. Marcá cada tema como “En repaso” o “Dominado” para organizar tu estudio.</p>
+                </div>
+            </section>
+            <div id="content-container" class="max-w-4xl mx-auto w-full space-y-6">
+                <!-- Active Topic Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div>
+                        <span id="topic-unit" class="text-xs font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-400">Módulo 1</span>
+                        <h2 id="topic-title" class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1">Cargando...</h2>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <select id="status-selector" class="text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-3 py-2 rounded-xl border-none focus:ring-2 focus:ring-brand-500 outline-none">
+                            <option value="por_empezar">🔴 Por Empezar</option>
+                            <option value="en_repaso">🟡 En Repaso</option>
+                            <option value="dominado">🟢 Dominado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Step Tabs Navigation -->
+                <div class="flex bg-slate-200/70 dark:bg-slate-800/70 p-1.5 rounded-2xl gap-1 border border-slate-200 dark:border-slate-700/50">
+                    <button data-tab="theory" class="tab-btn flex-1 py-2.5 px-4 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-all bg-white dark:bg-slate-700 text-brand-600 dark:text-white shadow-sm">
+                        <i class="fa-solid fa-book-open"></i>
+                        <span>1. Teoría & Fórmulas</span>
+                    </button>
+                    <button data-tab="examples" class="tab-btn flex-1 py-2.5 px-4 rounded-xl text-sm font-medium flex items-center justify-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+                        <i class="fa-solid fa-lightbulb"></i>
+                        <span>2. Ejemplos Resueltos</span>
+                    </button>
+                    <button data-tab="practice" class="tab-btn flex-1 py-2.5 px-4 rounded-xl text-sm font-medium flex items-center justify-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+                        <i class="fa-solid fa-pen-ruler"></i>
+                        <span>3. Práctica</span>
+                    </button>
+                </div>
+
+                <!-- Tab 1: Theory View -->
+                <div id="tab-theory" class="tab-content space-y-6">
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 space-y-6 shadow-sm">
+                        <div id="theory-text" class="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 leading-relaxed space-y-4">
+                            <!-- Theory content -->
+                        </div>
+                        
+                        <div id="expanded-guide" class="enhanced-panel">
+                            <h3 class="font-bold text-base mb-2">Cómo entender este tema</h3>
+                            <div id="expanded-guide-content" class="text-sm leading-relaxed space-y-2"></div>
+                        </div>
+                        <div id="topic-visuals" class="visual-grid"></div>
+                        <div id="formulas-box" class="bg-brand-50/50 dark:bg-slate-900/50 border border-brand-200 dark:border-brand-900/50 rounded-2xl p-5 space-y-3">
+                            <h3 class="font-bold text-brand-900 dark:text-brand-300 text-sm uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-key"></i> Fórmulas y Conceptos Clave
+                            </h3>
+                            <div id="formulas-list" class="grid gap-3 sm:grid-cols-2">
+                                <!-- Formulas rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Examples View -->
+                <div id="tab-examples" class="tab-content space-y-6 hidden">
+                    <div id="examples-list" class="space-y-4">
+                        <!-- Examples Accordions rendered here -->
+                    </div>
+                </div>
+
+                <!-- Tab 3: Practice View -->
+                <div id="tab-practice" class="tab-content space-y-6 hidden">
+                    <div id="practice-list" class="space-y-6">
+                        <!-- Practice exercises rendered here -->
+                    </div>
+                </div>
+
+                <!-- Bottom Navigation Steps -->
+                <div class="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-800">
+                    <button id="btn-prev-tab" class="px-4 py-2 rounded-xl text-sm font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Anterior
+                    </button>
+                    <button id="btn-next-tab" class="px-4 py-2 rounded-xl text-sm font-medium bg-brand-600 hover:bg-brand-700 text-white transition flex items-center gap-2">
+                        Siguiente <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Floating Calculator Modal -->
+    <div id="calculator-modal" class="hidden fixed bottom-6 right-6 z-50 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div class="bg-slate-100 dark:bg-slate-700/50 p-3 flex justify-between items-center border-b border-slate-200 dark:border-slate-700">
+            <span class="font-bold text-sm flex items-center gap-2">
+                <i class="fa-solid fa-calculator text-brand-500"></i> Calculadora
+            </span>
+            <button id="btn-close-calc" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="p-4 space-y-3">
+            <input type="text" id="calc-screen" readonly class="w-full text-right text-2xl font-mono p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none" value="0">
+            <div class="grid grid-cols-4 gap-2 text-sm font-semibold">
+                <button class="calc-btn p-2.5 rounded-lg bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400" data-act="clear">C</button>
+                <button class="calc-btn p-2.5 rounded-lg bg-slate-100 dark:bg-slate-700" data-act="append" data-val="(">(</button>
+                <button class="calc-btn p-2.5 rounded-lg bg-slate-100 dark:bg-slate-700" data-act="append" data-val=")">)</button>
+                <button class="calc-btn p-2.5 rounded-lg bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-300" data-act="append" data-val="/">/</button>
+
+                <button class="calc-btn p-2.5 rounded-lg bg-slate-50 dark:bg-slate-700/40" data-act="append" data-val="7">7</button>
+                <button class="calc-btn p-2.5 rounded-lg bg-slate-50 dark:bg-slate-700/40" data-act="append" data-val="8">8</button>
+                <button class="calc-btn p-2.5 rounded-lg bg-slate-50 dark:bg-slate-700/40" data-act="append" data-val="9">9</button>
+                <button class="calc-btn p-2.5 rounded-lg bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-300" data-act="append" data-val="*">*</button>
+
+                <button class="calc-btn p-2.5 rounded-lg bg-slate-50 dark:bg-slate-700/40" data-act="append" data-val="4">4</button>
+
+                <button class="calc-btn p-2.5 rounded-lg bg-slate-50 dark:bg-slate-700/40" data-act="append" data-val="5">5</button>
+                <button class="calc-btn p-2.5 rounded-lg bg-slate-50 dark:bg-slate-700/40" data-act="append" data-val="6">6</button>
+                <button class="calc-btn p-2.5 rounded-lg bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-300" data-act="append" data-val="-">-</button>
+
+                <button class="calc-btn p-2.5 rounded-lg bg-slate-50 dark:bg-slate-700/40" data-act="append" data-val="1">1</button>
+                <button class="calc-btn p-2.5 rounded-lg bg-slate-50 dark:bg-slate-700/40" data-act="append" data-val="2">2</button>
+                <button class="calc-btn p-2.5 rounded-lg bg-slate-50 dark:bg-slate-700/40" data-act="append" data-val="3">3</button>
+                <button class="calc-btn p-2.5 rounded-lg bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-300" data-act="append" data-val="+">+</button>
+
+                <button class="calc-btn p-2.5 rounded-lg bg-slate-50 dark:bg-slate-700/40" data-act="append" data-val="0">0</button>
+                <button class="calc-btn p-2.5 rounded-lg bg-slate-50 dark:bg-slate-700/40" data-act="append" data-val=".">.</button>
+                <button class="calc-btn p-2.5 rounded-lg bg-slate-100 dark:bg-slate-700" data-act="append" data-val="^">x^y</button>
+                <button class="calc-btn p-2.5 rounded-lg bg-brand-600 text-white" data-act="eval">=</button>
+            </div>
+            <div class="border-t border-slate-200 dark:border-slate-700 pt-3 space-y-2">
+                <p class="text-xs text-slate-500 dark:text-slate-400">Funciones científicas (ingresá el número y luego la función, o usá paréntesis).</p>
+                <div class="calc-extra">
+                    <button class="calc-sci" data-fn="sqrt">√x</button>
+                    <button class="calc-sci" data-fn="square">x²</button>
+                    <button class="calc-sci" data-fn="sin">sin</button>
+                    <button class="calc-sci" data-fn="cos">cos</button>
+                    <button class="calc-sci" data-fn="tan">tan</button>
+                    <button class="calc-sci" data-fn="log">log</button>
+                    <button class="calc-sci" data-fn="ln">ln</button>
+                    <button class="calc-sci" data-fn="abs">|x|</button>
+                    <button class="calc-sci" data-fn="pi">π</button>
+                    <button class="calc-sci" data-fn="ans">Ans</button>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Seno, coseno y tangente trabajan en grados. Para potencias usá x^y.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flashcards Modal -->
+    <div id="flashcard-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-6 space-y-6 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col text-center">
+            <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-3">
+                <span class="text-xs font-bold uppercase text-brand-500 tracking-wider">Tarjetas de Repaso Rápido</span>
+                <button id="btn-close-flashcards" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div id="flashcard-card" class="bg-slate-100 dark:bg-slate-900 min-h-[180px] rounded-2xl p-6 flex flex-col justify-center items-center cursor-pointer transition-transform hover:scale-[1.02]">
+                <div id="fc-question" class="font-bold text-lg text-slate-800 dark:text-white"></div>
+                <div id="fc-answer" class="text-brand-600 dark:text-brand-400 mt-4 text-base hidden"></div>
+                <span class="text-xs text-slate-400 mt-4"><i class="fa-solid fa-rotate mr-1"></i> Haz clic para revelar la respuesta</span>
+            </div>
+
+            <div class="flex justify-between items-center pt-2">
+                <button id="fc-prev" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 rounded-xl text-sm font-medium"><i class="fa-solid fa-arrow-left"></i></button>
+                <span id="fc-counter" class="text-xs font-semibold text-slate-400">1 / 10</span>
+                <button id="fc-next" class="px-4 py-2 bg-brand-600 text-white rounded-xl text-sm font-medium"><i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logic & Course Content -->
+    <script>
+        const initialTopics = [
+            {
+                id: 'm1',
+                unit: 'Módulo 1',
+                title: 'Sucesiones Numéricas y Convergencia',
+                status: 'por_empezar',
+                theory: '<p>Una <strong>Sucesión Numérica</strong> es un conjunto ordenado de números llamados términos, donde cada término ocupa una posición determinada $n$ (con $n \\in \\mathbb{N}$).</p><p>El <strong>Término General ($a_n$)</strong> es una expresión algebraica que permite calcular cualquier término de la sucesión en función de su posición $n$.</p><p><strong>Comportamiento y Convergencia:</strong> Al analizar el valor de $a_n$ a medida que $n$ crece ($n \\to \\infty$), una sucesión puede aproximarse a un número fijo (<em>convergente</em>) o crecer/decrecer indefinidamente (<em>divergente</em>).</p><p><strong>Acotación:</strong> Una sucesión está acotada cuando sus términos no superan un límite superior o inferior determinado.</p>',
+                formulas: [
+                    { name: 'Término General', formula: 'a_n = f(n), \\quad n \\in \\mathbb{N}' },
+                    { name: 'Aproximación a e', formula: 'm_n = \\left(1 + \\frac{1}{n}\\right)^n \\to e \\approx 2.71828' }
+                ],
+                examples: [
+                    {
+                        title: 'Sucesión de Cuadrados Perfectos',
+                        statement: 'Dada la sucesión definida por $a_n = n^2$, encuentra los primeros 4 términos y la posición $n=20$.',
+                        steps: [
+                            '$a_1 = 1^2 = 1$',
+                            '$a_2 = 2^2 = 4$',
+                            '$a_3 = 3^2 = 9$',
+                            '$a_4 = 4^2 = 16$',
+                            'Para $n=20$: $a_{20} = 20^2 = 400$'
+                        ]
+                    },
+                    {
+                        title: 'Sucesión de Aproximación al Número e',
+                        statement: 'Analiza la convergencia de $m_n = \\left(1 + \\frac{1}{n}\\right)^n$',
+                        steps: [
+                            'Para $n=1$: $m_1 = (1 + 1)^1 = 2$',
+                            'Para $n=10$: $m_{10} = (1.1)^{10} \\approx 2.5937$',
+                            'Para $n=100$: $m_{100} = (1.01)^{100} \\approx 2.7048$',
+                            'A medida que $n \\to \\infty$, los términos se aproximan al número irracional $e \\approx 2.71828...$, demostrando que la sucesión es **convergente**.'
+                        ]
+                    }
+                ],
+                practice: [
+                    {
+                        question: 'Calcula los primeros 4 términos y el término $a_{10}$ para $a_n = 2n - 3$.',
+                        solution: '$a_1 = -1, \\quad a_2 = 1, \\quad a_3 = 3, \\quad a_4 = 5, \\quad a_{10} = 2(10) - 3 = 17$'
+                    },
+                    {
+                        question: 'Calcula los primeros 4 términos y el término $b_{10}$ para $b_n = \\frac{2n-1}{n+1}$.',
+                        solution: '$b_1 = \\frac{1}{2}, \\quad b_2 = \\frac{3}{3} = 1, \\quad b_3 = \\frac{5}{4}, \\quad b_4 = \\frac{7}{5}, \\quad b_{10} = \\frac{19}{11}$'
+                    },
+                    {
+                        question: 'Calcula los primeros 4 términos y el término $c_{10}$ para $c_n = (-2)^n$.',
+                        solution: '$c_1 = -2, \\quad c_2 = 4, \\quad c_3 = -8, \\quad c_4 = 16, \\quad c_{10} = (-2)^{10} = 1024$'
+                    },
+                    {
+                        question: 'Halla el término general de las siguientes sucesiones:<br>a) $11, 13, 15, 17, 19...$<br>b) $1, 8, 27, 64, 125...$<br>c) $-3, 9, -27, 81...$',
+                        solution: 'a) $a_n = 2n + 9$<br>b) $b_n = n^3$<br>c) $c_n = (-3)^n$'
+                    }
+                ]
+            },
+            {
+                id: 'm2',
+                unit: 'Módulo 2',
+                title: 'Trigonometría en Triángulos Rectángulos',
+                status: 'por_empezar',
+                theory: '<p><strong>Razones Trigonométricas:</strong> Son las relaciones cuantitativas entre los lados de un triángulo rectángulo respecto a uno de sus ángulos agudos $A$:</p><ul><li><strong>Seno:</strong> $\\sin A = \\frac{\\text{Cateto Opuesto}}{\\text{Hipotenusa}}$</li><li><strong>Coseno:</strong> $\\cos A = \\frac{\\text{Cateto Adyacente}}{\\text{Hipotenusa}}$</li><li><strong>Tangente:</strong> $\\tan A = \\frac{\\text{Cateto Opuesto}}{\\text{Cateto Adyacente}}$</li></ul><p><strong>Triángulos Semejantes:</strong> Triángulos con ángulos homólogos iguales mantienen proporciones constantes entre sus lados correspondientes.</p>',
+                formulas: [
+                    { name: 'Seno', formula: '\\sin A = \\frac{\\text{Opuesto}}{\\text{Hipotenusa}}' },
+                    { name: 'Coseno', formula: '\\cos A = \\frac{\\text{Adyacente}}{\\text{Hipotenusa}}' },
+                    { name: 'Tangente', formula: '\\tan A = \\frac{\\text{Opuesto}}{\\text{Adyacente}}' }
+                ],
+                examples: [
+                    {
+                        title: 'Interpretación de la razón coseno',
+                        statement: 'Si en un triángulo rectángulo se conoce que $\\cos(\\alpha) = 0.2$, ¿cuál es la relación entre sus lados?',
+                        steps: [
+                            'Convertimos $0.2$ a fracción: $0.2 = \\frac{2}{10} = \\frac{1}{5}$.',
+                            'Por definición: $\\cos(\\alpha) = \\frac{\\text{Cateto Adyacente}}{\\text{Hipotenusa}} = \\frac{1}{5}$.',
+                            'Significa que la proporción entre el cateto adyacente y la hipotenusa es de $1$ a $5$.'
+                        ]
+                    }
+                ],
+                practice: [
+                    {
+                        question: 'Dado un triángulo rectángulo donde $\\cos(\\alpha) = 0.2$ y la hipotenusa mide $10\\text{ cm}$, calcula las medidas de los dos catetos.',
+                        solution: '1. Cateto Adyacente = $\\text{Hipotenusa} \\cdot \\cos(\\alpha) = 10 \\cdot 0.2 = 2\\text{ cm}$.<br>2. Aplicando Pitágoras: $\\text{Opuesto} = \\sqrt{10^2 - 2^2} = \\sqrt{96} \\approx 9.80\\text{ cm}$.'
+                    }
+                ]
+            },
+            {
+                id: 'm3',
+                unit: 'Módulo 3',
+                title: 'Radicales y Operaciones',
+                status: 'por_empezar',
+                theory: '<p><strong>Propiedades de las Raíces:</strong></p><ul><li>Producto: $\\sqrt[n]{a \\cdot b} = \\sqrt[n]{a} \\cdot \\sqrt[n]{b}$</li><li>Cociente: $\\sqrt[n]{\\frac{a}{b}} = \\frac{\\sqrt[n]{a}}{\\sqrt[n]{b}}$</li><li>Potencia de una Raíz: $(\\sqrt[n]{a})^p = \\sqrt[n]{a^p}$</li><li>Raíz de Raíz: $\\sqrt[m]{\\sqrt[n]{a}} = \\sqrt[m \\cdot n]{a}$</li></ul><p><strong>Racionalización:</strong> Procedimiento para eliminar las raíces presentes en el denominador de una fracción.</p>',
+                formulas: [
+                    { name: 'Extracción de Factores', formula: '\\sqrt[n]{a^{n \\cdot k + r}} = a^k \\sqrt[n]{a^r}' },
+                    { name: 'Racionalización Simple', formula: '\\frac{1}{\\sqrt{a}} = \\frac{\\sqrt{a}}{a}' }
+                ],
+                examples: [
+                    {
+                        title: 'Introducción de Factores',
+                        statement: 'Introduce el factor dentro del radical: $2 \\cdot \\sqrt{3}$',
+                        steps: [
+                            'Elevamos el factor externo al índice de la raíz (2): $2^2 = 4$.',
+                            'Ingresamos multiplicando: $\\sqrt{2^2 \\cdot 3} = \\sqrt{4 \\cdot 3} = \\sqrt{12}$.'
+                        ]
+                    },
+                    {
+                        title: 'Cociente de igual índice',
+                        statement: 'Simplifica $\\frac{\\sqrt{128}}{\\sqrt{16}}$',
+                        steps: [
+                            'Aplicamos propiedad del cociente: $\\sqrt{\\frac{128}{16}}$.',
+                            'Dividimos: $\\sqrt{8}$.',
+                            'Extraemos factores: $\\sqrt{2^3} = 2\\sqrt{2}$.'
+                        ]
+                    }
+                ],
+                practice: [
+                    {
+                        question: 'Extrae factores del radical:<br>a) $\\sqrt{128}$<br>b) $\\sqrt{1728}$',
+                        solution: 'a) $\\sqrt{128} = \\sqrt{2^7} = 2^3\\sqrt{2} = 8\\sqrt{2}$<br>b) $\\sqrt{1728} = \\sqrt{2^6 \\cdot 3^3} = 2^3 \\cdot 3 \\sqrt{3} = 24\\sqrt{3}$'
+                    },
+                    {
+                        question: 'Simplifica las expresiones:<br>a) $\\frac{\\sqrt{4}}{\\sqrt{2}}$<br>b) $\\frac{\\sqrt{x^4}}{\\sqrt{x^3}}$',
+                        solution: 'a) $\\sqrt{\\frac{4}{2}} = \\sqrt{2}$<br>b) $\\sqrt{\\frac{x^4}{x^3}} = \\sqrt{x}$'
+                    },
+                    {
+                        question: 'Racionaliza el denominador: $\\frac{1}{\\sqrt{3} \\cdot \\sqrt{2}}$',
+                        solution: '$\\frac{1}{\\sqrt{6}} = \\frac{1 \\cdot \\sqrt{6}}{\\sqrt{6} \\cdot \\sqrt{6}} = \\frac{\\sqrt{6}}{6}$'
+                    }
+                ]
+            },
+            {
+                id: 'm4',
+                unit: 'Módulo 4',
+                title: 'Valor Absoluto y Ecuaciones/Inecuaciones',
+                status: 'por_empezar',
+                theory: '<p>El <strong>Valor Absoluto $|x|$</strong> representa la distancia de un número $x$ al cero en la recta numérica. Siempre cumple $|x| \\ge 0$.</p><p><strong>Propiedades Clave:</strong></p><ul><li>$|x| = |-x|$</li><li>$|x - y|$ es la distancia entre $x$ e $y$</li><li>$|ax + b| = c \\iff ax + b = c \\text{ o } ax + b = -c$</li><li>$|ax + b| \\le c \\iff -c \\le ax + b \\le c$</li><li>$|ax + b| > c \\iff ax + b > c \\text{ o } ax + b < -c$</li></ul>',
+                formulas: [
+                    { name: 'Propiedad Modular Estricta', formula: '|x| \\le a \\iff -a \\le x \\le a' },
+                    { name: 'Propiedad Desigualdad Exterior', formula: '|x| > a \\iff x > a \\lor x < -a' }
+                ],
+                examples: [
+                    {
+                        title: 'Ecuación con Valor Absoluto',
+                        statement: 'Resuelve $|2x - 2| = 6$',
+                        steps: [
+                            'Caso 1: $2x - 2 = 6 \\implies 2x = 8 \\implies x = 4$',
+                            'Caso 2: $2x - 2 = -6 \\implies 2x = -4 \\implies x = -2$',
+                            'Conjunto solución: $S = \\{-2, 4\\}$'
+                        ]
+                    },
+                    {
+                        title: 'Inecuación con Valor Absoluto',
+                        statement: 'Resuelve $3|5x - 6| \\le 12$',
+                        steps: [
+                            'Dividir por 3: $|5x - 6| \\le 4$',
+                            'Aplicar propiedad: $-4 \\le 5x - 6 \\le 4$',
+                            'Sumar 6 a cada miembro: $2 \\le 5x \\le 10$',
+                            'Dividir por 5: $\\frac{2}{5} \\le x \\le 2$',
+                            'Solución: $S = [\\frac{2}{5}, 2]$'
+                        ]
+                    }
+                ],
+                practice: [
+                    {
+                        question: 'Determina los valores de $x$ para $|4x - 1| = 5$',
+                        solution: '$4x - 1 = 5 \\implies x = 1.5$<br>$4x - 1 = -5 \\implies x = -1$<br>$S = \\{-1, 1.5\\}$'
+                    },
+                    {
+                        question: 'Resuelve la inecuación $2|2x - 3| \\le 8$',
+                        solution: '$|2x - 3| \\le 4 \\implies -4 \\le 2x - 3 \\le 4$<br>$-1 \\le 2x \\le 7 \\implies -0.5 \\le x \\le 3.5$<br>$S = [-0.5, 3.5]$'
+                    }
+                ]
+            },
+            {
+                id: 'm5',
+                unit: 'Módulo 5',
+                title: 'Funciones Definidas por Partes y Parte Entera',
+                status: 'por_empezar',
+                theory: '<p><strong>Funciones por Partes:</strong> Aplican distintas expresiones algebraicas según el subdominio de la variable $x$.</p><p><strong>Función Parte Entera ($h(x) = \\lfloor x \\rfloor$):</strong> Asigna a cada número real $x$ el mayor número entero menor o igual que $x$. Su gráfica es un conjunto de escalones discontinuos.</p>',
+                formulas: [
+                    { name: 'Parte Entera', formula: '\\lfloor x \\rfloor = k \\iff k \\le x < k+1, \\quad k \\in \\mathbb{Z}' }
+                ],
+                examples: [
+                    {
+                        title: 'Evaluación de Parte Entera',
+                        statement: 'Evalúa $\\lfloor 4.7 \\rfloor$ y $\\lfloor -1.2 \\rfloor$',
+                        steps: [
+                            'Para $4.7$: El entero menor o igual más cercano es **4**.',
+                            'Para $-1.2$: El entero menor o igual en la recta numérica es **-2**.'
+                        ]
+                    }
+                ],
+                practice: [
+                    {
+                        question: 'Para $h(x) = \\lfloor x \\rfloor$, calcula $h(2.8)$, $h(-1.3)$, $h(0)$, $h(-4.9)$',
+                        solution: '$h(2.8) = 2$<br>$h(-1.3) = -2$<br>$h(0) = 0$<br>$h(-4.9) = -5$'
+                    },
+                    {
+                        question: 'Determina los posibles valores de $x$ para $h(x) = 3$',
+                        solution: 'Por definición de parte entera, $\\lfloor x \\rfloor = 3 \\implies x \\in [3, 4)$'
+                    }
+                ]
+            },
+            {
+                id: 'm6',
+                unit: 'Módulo 6',
+                title: 'Funciones Trigonométricas y Modelización Periódica',
+                status: 'por_empezar',
+                theory: '<p><strong>Conversión de Ángulos:</strong> $\\pi \\text{ rad} = 180^\\circ$.</p><p><strong>Modelización Periódica:</strong> Expresada habitualmente como $f(t) = C + A \\sin(Bt)$</p><ul><li><strong>Amplitud ($|A|$):</strong> Distancia máxima desde la línea media.</li><li><strong>Eje Medio ($C$):</strong> Desplazamiento vertical.</li><li><strong>Período ($T$):</strong> Tiempo para completar un ciclo: $T = \\frac{2\\pi}{B}$.</li><li><strong>Máximo:</strong> $C + A$; <strong>Mínimo:</strong> $C - A$.</li></ul>',
+                formulas: [
+                    { name: 'Período', formula: 'T = \\frac{2\\pi}{B}' },
+                    { name: 'Grados a Radianes', formula: '\\text{rad} = \\text{grados} \\cdot \\frac{\\pi}{180^\\circ}' }
+                ],
+                examples: [
+                    {
+                        title: 'Modelización de una Rueda de la Fortuna',
+                        statement: 'Dada la altura $h(t) = 15 + 10\\sin\\left(\\frac{\\pi}{6}t\\right)$, halla sus parámetros.',
+                        steps: [
+                            'Amplitud: $A = 10\\text{ m}$',
+                            'Eje medio: $C = 15\\text{ m}$',
+                            'Altura Máxima: $15 + 10 = 25\\text{ m}$',
+                            'Altura Mínima: $15 - 10 = 5\\text{ m}$',
+                            'Período: $T = \\frac{2\\pi}{\\pi/6} = 12\\text{ segundos/horas}$'
+                        ]
+                    }
+                ],
+                practice: [
+                    {
+                        question: 'Convierte a radianes: $30^\\circ, 45^\\circ, 120^\\circ$',
+                        solution: '$30^\\circ = \\frac{\\pi}{6}\\text{ rad}$<br>$45^\\circ = \\frac{\\pi}{4}\\text{ rad}$<br>$120^\\circ = \\frac{2\\pi}{3}\\text{ rad}$'
+                    },
+                    {
+                        question: 'Para la función $f(x) = 3 + 6\\sin\\left(\\frac{\\pi}{7}x\\right)$, halla amplitud, eje medio, máximo y período.',
+                        solution: 'Amplitud = $6$<br>Eje medio = $3$<br>Máximo = $3 + 6 = 9$<br>Período = $T = \\frac{2\\pi}{\\pi/7} = 14$'
+                    }
+                ]
+            },
+            {
+                id: 'm7',
+                unit: 'Módulo 7',
+                title: 'Geometría Analítica - La Recta',
+                status: 'por_empezar',
+                theory: '<p><strong>Ecuaciones de la Recta:</strong></p><ul><li>Explícita: $y = mx + b$</li><li>Punto-Pendiente: $y - y_1 = m(x - x_1)$</li><li>Vectorial: $(x,y) = (x_1,y_1) + k(v_1,v_2)$</li><li>Paramétricas: $x = x_1 + k v_1, \\quad y = y_1 + k v_2$</li><li>Continua: $\\frac{x - x_1}{v_1} = \\frac{y - y_1}{v_2}$</li></ul><p><strong>Relaciones:</strong> Rectas paralelas tienen $m_1 = m_2$. Rectas perpendiculares tienen $m_1 \\cdot m_2 = -1$.</p>',
+                formulas: [
+                    { name: 'Pendiente entre 2 Puntos', formula: 'm = \\frac{y_2 - y_1}{x_2 - x_1}' },
+                    { name: 'Condición Perpendicular', formula: 'm_2 = -\\frac{1}{m_1}' }
+                ],
+                examples: [
+                    {
+                        title: 'Ecuaciones a partir de Punto y Vector Director',
+                        statement: 'Recta que pasa por $P(-2,3)$ con $\\vec{v}=(3,4)$',
+                        steps: [
+                            'Vectorial: $(x,y) = (-2,3) + k(3,4)$',
+                            'Paramétricas: $x = -2 + 3k, \\quad y = 3 + 4k$',
+                            'Continua: $\\frac{x+2}{3} = \\frac{y-3}{4}$'
+                        ]
+                    }
+                ],
+                practice: [
+                    {
+                        question: 'Halla la pendiente y la ecuación explícita que pasa por $A(2,6)$ y $B(5,-1)$.',
+                        solution: 'Pendiente $m = \\frac{-1 - 6}{5 - 2} = -\\frac{7}{3}$<br>Ecuación: $y - 6 = -\\frac{7}{3}(x - 2) \\implies y = -\\frac{7}{3}x + \\frac{32}{3}$'
+                    },
+                    {
+                        question: 'Halla la recta paralela a $2x - y + 7 = 0$ que pasa por $(2,3)$.',
+                        solution: 'Pendiente dada $m = 2$.<br>Ecuación: $y - 3 = 2(x - 2) \\implies y = 2x - 1$'
+                    }
+                ]
+            },
+            {
+                id: 'm8',
+                unit: 'Módulo 8',
+                title: 'Geometría Analítica - La Circunferencia',
+                status: 'por_empezar',
+                theory: '<p>Lugar geométrico de todos los puntos del plano que equidistan de un punto centro $C(h,k)$ a una distancia llamada radio $r$.</p><p><strong>Ecuación Canónica:</strong> $$(x - h)^2 + (y - k)^2 = r^2$$</p><p><strong>Ecuación General:</strong> $$x^2 + y^2 + Dx + Ey + F = 0$$</p>',
+                formulas: [
+                    { name: 'Forma Canónica', formula: '(x - h)^2 + (y - k)^2 = r^2' }
+                ],
+                examples: [
+                    {
+                        title: 'Deducción de Centro y Radio',
+                        statement: 'Dada $(x - 4)^2 + (y + 1)^2 = 25$, pasa a la forma general.',
+                        steps: [
+                            'Centro $C(4, -1)$, Radio $r = \\sqrt{25} = 5$.',
+                            'Desarrollar binomios: $(x^2 - 8x + 16) + (y^2 + 2y + 1) = 25$',
+                            'Reagrupar a cero: $x^2 + y^2 - 8x + 2y - 8 = 0$'
+                        ]
+                    }
+                ],
+                practice: [
+                    {
+                        question: 'Determina el centro y radio de: $(x + 2)^2 + (y - 3)^2 = 16$',
+                        solution: 'Centro $C(-2, 3)$, Radio $r = \\sqrt{16} = 4$'
+                    },
+                    {
+                        question: 'Escribe la ecuación canónica con centro $C(-2, 4)$ y radio $r=3$.',
+                        solution: '$(x + 2)^2 + (y - 4)^2 = 9$'
+                    }
+                ]
+            },
+            {
+                id: 'm9',
+                unit: 'Módulo 9',
+                title: 'Geometría Analítica - La Parábola',
+                status: 'por_empezar',
+                theory: '<p>Conjunto de puntos $P$ del plano que están a igual distancia de un punto fijo foco ($F$) y de una recta directriz ($d$).</p><ul><li><strong>Vértice $V(h,k)$:</strong> Punto medio entre foco y directriz.</li><li><strong>Parámetro $p$:</strong> Distancia del vértice al foco.</li><li><strong>Ecuación Canónica (Eje vertical):</strong> $(x - h)^2 = 4p(y - k)$</li></ul>',
+                formulas: [
+                    { name: 'Ecuación Canónica Vertical', formula: '(x - h)^2 = 4p(y - k)' }
+                ],
+                examples: [
+                    {
+                        title: 'Análisis de Parábola',
+                        statement: 'Para $(x - 3)^2 = 4(y + 2)$, encuentra sus elementos.',
+                        steps: [
+                            'Vértice $V(3, -2)$',
+                            'Como $4p = 4 \\implies p = 1$',
+                            'Foco: $F(3, -2 + 1) = F(3, -1)$',
+                            'Directriz: $y = -2 - 1 \\implies y = -3$',
+                            'Apertura: Hacia arriba ($p > 0$).'
+                        ]
+                    }
+                ],
+                practice: [
+                    {
+                        question: 'Para la parábola $x^2 = 12y$, halla Vértice, valor de $p$ y Foco.',
+                        solution: 'Vértice $V(0,0)$<br>$4p = 12 \\implies p = 3$<br>Foco $F(0,3)$, Directriz $y = -3$'
+                    }
+                ]
+            },
+            {
+                id: 'm10',
+                unit: 'Módulo 10',
+                title: 'Intersecciones entre Figuras Geométricas',
+                status: 'por_empezar',
+                theory: '<p>Para calcular los puntos de cruce entre dos figuras (ej: recta y circunferencia, o recta y parábola), se resuelve el <strong>sistema de ecuaciones</strong> asociando ambas ecuaciones.</p><p>Se despeja una variable en la recta lineal y se sustituye en la ecuación cuadrática, aplicando luego la fórmula resolvente cuadrática.</p>',
+                formulas: [
+                    { name: 'Fórmula Resolvente', formula: 'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}' }
+                ],
+                examples: [
+                    {
+                        title: 'Intersección Circunferencia y Recta',
+                        statement: 'Halla la intersección de $(x-2)^2 + (y-1)^2 = 25$ y $y = x - 2$',
+                        steps: [
+                            'Sustituir $y$: $(x - 2)^2 + (x - 2 - 1)^2 = 25$',
+                            'Desarrollar: $(x - 2)^2 + (x - 3)^2 = 25 \\implies 2x^2 - 10x - 12 = 0$',
+                            'Simplificar: $x^2 - 5x - 6 = 0$',
+                            'Resolvente: $x = 6$ y $x = -1$',
+                            'Puntos de corte: $P_1(6, 4)$ y $P_2(-1, -3)$'
+                        ]
+                    }
+                ],
+                practice: [
+                    {
+                        question: 'Calcula la intersección entre la parábola $y = x^2 - 4x + 1$ y la recta $y = -x + 5$.',
+                        solution: 'Igualar expresiones: $x^2 - 4x + 1 = -x + 5$<br>$x^2 - 3x - 4 = 0 \\implies (x - 4)(x + 1) = 0$<br>Puntos: $P_1(4, 1)$ y $P_2(-1, 6)$'
+                    }
+                ]
+            }
+        ];
+
+        let topics = [];
+        let activeTopicId = null;
+        let activeTab = 'theory';
+        let currentFlashcardIdx = 0;
+
+        const flashcardsList = [
+            { q: '¿Qué es una sucesión convergente?', a: 'Es una sucesión cuyos términos se aproximan a un número fijo a medida que n tiende a infinito.' },
+            { q: 'Fórmula de Seno en Triángulo Rectángulo', a: 'Seno = Cateto Opuesto / Hipotenusa' },
+            { q: 'Propiedad de la raíz del producto', a: '√(a · b) = √a · √b' },
+            { q: '¿Qué representa el Valor Absoluto |x|?', a: 'La distancia desde el número x hasta el cero en la recta numérica.' },
+            { q: '¿Qué es la Función Parte Entera ⌊x⌋?', a: 'Asigna a cada número real el mayor número entero menor o igual que él.' },
+            { q: 'Fórmula del Período en Ondas Trigonométricas', a: 'T = 2π / B' },
+            { q: 'Ecuación Explícita de la Recta', a: 'y = mx + b (donde m es pendiente y b es ordenada al origen)' },
+            { q: 'Ecuación Canónica de la Circunferencia', a: '(x - h)² + (y - k)² = r²' },
+            { q: 'Ecuación Canónica de Parábola Vertical', a: '(x - h)² = 4p(y - k)' },
+            { q: 'Método para hallar intersección de figuras', a: 'Sustituir la expresión lineal en la cuadrática y aplicar la fórmula resolvente.' }
+        ];
+
+        // Elements
+        const topicsListEl = document.getElementById('topics-list');
+        const statusSelector = document.getElementById('status-selector');
+        const themeToggle = document.getElementById('theme-toggle');
+        const globalSearch = document.getElementById('global-search');
+        const searchResults = document.getElementById('search-results');
+        const calcModal = document.getElementById('calculator-modal');
+        const flashcardModal = document.getElementById('flashcard-modal');
+
+        function init() {
+            loadTopics();
+            renderTopicsList();
+            if (topics.length > 0) selectTopic(topics[0].id);
+            updateProgress();
+            setupEventListeners();
+        }
+
+        function loadTopics() {
+            const saved = localStorage.getItem('math_portal_year_topics');
+            if (saved) {
+                try { topics = JSON.parse(saved); } catch(e) { topics = initialTopics; }
+            } else {
+                topics = initialTopics;
+            }
+        }
+
+        function saveTopics() {
+            localStorage.setItem('math_portal_year_topics', JSON.stringify(topics));
+            updateProgress();
+        }
+
+        function renderTopicsList() {
+            topicsListEl.innerHTML = '';
+            topics.forEach(t => {
+                const btn = document.createElement('button');
+                btn.onclick = () => selectTopic(t.id);
+                const isSelected = t.id === activeTopicId;
+                const statusDot = t.status === 'dominado' ? 'bg-emerald-500' : (t.status === 'en_repaso' ? 'bg-amber-500' : 'bg-rose-500');
+
+                btn.className = `w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center justify-between group transition-all mb-1 ${
+                    isSelected 
+                    ? 'bg-brand-500/10 text-brand-600 dark:text-brand-400 font-semibold' 
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50'
+                }`;
+
+                btn.innerHTML = `
+                    <div class="truncate">
+                        <div class="text-[10px] text-slate-400 font-normal uppercase">${t.unit}</div>
+                        <div class="truncate">${t.title}</div>
+                    </div>
+                    <span class="w-2.5 h-2.5 rounded-full ${statusDot} shrink-0 ml-2" title="Estado: ${t.status}"></span>
+                `;
+                topicsListEl.appendChild(btn);
+            });
+        }
+
+
+        // Explicaciones ampliadas con ejemplos cotidianos y apoyos visuales por módulo.
+        const expandedGuides = {
+          m1: `<p><b>Cómo leer una sucesión:</b> el subíndice indica la posición, no una multiplicación. En a₄, por ejemplo, buscamos el cuarto término.</p>
+               <p><b>Ejemplo extra:</b> si aₙ = 3n + 2, entonces a₁ = 5, a₂ = 8, a₃ = 11 y a₄ = 14. La diferencia constante entre términos consecutivos es 3.</p>
+               <p><b>Convergencia y divergencia:</b> 1/n se acerca a 0 cuando n crece; en cambio, n² aumenta sin límite. Una sucesión puede ser acotada y no converger, como 1, −1, 1, −1…</p>`,
+          m2: `<p><b>Primero identificá los lados:</b> la hipotenusa está frente al ángulo recto y siempre es el lado más largo. El cateto opuesto queda enfrente del ángulo elegido; el adyacente toca ese ángulo.</p>
+               <p><b>Ejemplo extra:</b> si el cateto opuesto mide 6 cm y la hipotenusa 10 cm, sen(α) = 6/10 = 0,6. Para hallar un lado, despejá la razón: opuesto = hipotenusa · sen(α).</p>
+               <p><b>Comprobación:</b> en un triángulo rectángulo, a² + b² = c². Revisá también que la calculadora esté en grados si el ángulo está expresado en °.</p>`,
+          m3: `<p><b>Qué se puede operar:</b> las raíces de igual índice pueden multiplicarse o dividirse bajo un mismo radical cuando se cumplen las condiciones de la propiedad. Para sumar radicales, primero simplificá y después combiná solo los semejantes.</p>
+               <p><b>Ejemplo extra:</b> √50 = √(25·2) = 5√2. Por eso 2√2 + 5√2 = 7√2, pero √2 + √3 no se puede reducir a un solo radical equivalente de esa forma.</p>
+               <p><b>Racionalizar</b> significa quitar la raíz del denominador sin cambiar el valor de la fracción: se multiplica numerador y denominador por el factor adecuado.</p>`,
+          m4: `<p><b>Interpretación:</b> |x| es una distancia, por eso nunca es negativa. La ecuación |x| = 4 tiene dos soluciones, 4 y −4, porque ambas están a cuatro unidades del cero.</p>
+               <p><b>Regla práctica:</b> |A| = c con c ≥ 0 se separa en A = c o A = −c. En cambio, |A| ≤ c se convierte en −c ≤ A ≤ c. Para |A| &gt; c, la solución queda por fuera del intervalo.</p>
+               <p><b>Ejemplo extra:</b> |x − 3| ≤ 2 significa que x está a no más de dos unidades de 3: 1 ≤ x ≤ 5.</p>`,
+          m5: `<p><b>Funciones definidas por partes:</b> antes de reemplazar x, comprobá en qué intervalo cae. Un mismo valor de x solo debe usar la regla correspondiente a su condición.</p>
+               <p><b>Parte entera:</b> ⌊x⌋ es el mayor entero menor o igual que x. Atención con negativos: ⌊−2,1⌋ = −3, porque −3 ≤ −2,1 &lt; −2.</p>
+               <p><b>Ejemplo extra:</b> si f(x) = x + 1 para x &lt; 0 y f(x) = x² para x ≥ 0, entonces f(−2) = −1 y f(3) = 9.</p>`,
+          m6: `<p><b>Amplitud:</b> indica cuánto sube y baja la onda desde su eje medio. El eje medio es C; por eso el máximo es C + |A| y el mínimo es C − |A|.</p>
+               <p><b>Período:</b> cuánto tarda en repetirse un ciclo. En f(x) = C + A·sen(Bx), el período es 2π/|B|, siempre que B ≠ 0.</p>
+               <p><b>Ejemplo extra:</b> f(x) = 4 + 2 sen(πx) tiene eje medio 4, amplitud 2, máximo 6, mínimo 2 y período 2.</p>`,
+          m7: `<p><b>Pendiente:</b> m mide cuánto cambia y cuando x aumenta una unidad. Si m es positiva, la recta sube; si es negativa, baja; si m = 0, es horizontal.</p>
+               <p><b>Ejemplo extra:</b> por A(1,2) y B(3,6), m = (6−2)/(3−1) = 2. Usando y = mx + b y el punto (1,2), queda 2 = 2·1 + b, por lo tanto b = 0 y la recta es y = 2x.</p>
+               <p><b>Paralelas y perpendiculares:</b> las paralelas tienen la misma pendiente. Si ambas pendientes están definidas, las perpendiculares cumplen m₁·m₂ = −1.</p>`,
+          m8: `<p><b>Cómo reconocer el centro:</b> en (x−h)² + (y−k)² = r², el centro es C(h,k). El signo que aparece dentro del paréntesis es contrario al valor de la coordenada.</p>
+               <p><b>Ejemplo extra:</b> (x+1)² + (y−2)² = 9 tiene centro (−1,2) y radio 3. Para dibujarla, marcá el centro y cuatro puntos a distancia r hacia arriba, abajo, izquierda y derecha.</p>
+               <p><b>Comprobación:</b> si un punto está en la circunferencia, al reemplazar sus coordenadas la igualdad debe cumplirse.</p>`,
+          m9: `<p><b>La parábola:</b> tiene un vértice y un eje de simetría. En (x−h)² = 4p(y−k), el vértice es (h,k); si p es positivo abre hacia arriba y si es negativo, hacia abajo.</p>
+               <p><b>Ejemplo extra:</b> x² = −8y implica 4p = −8, entonces p = −2. El vértice es (0,0), el foco (0,−2) y la directriz y = 2.</p>
+               <p><b>Importante:</b> en la forma horizontal (y−k)² = 4p(x−h), la apertura es hacia la derecha si p &gt; 0 y hacia la izquierda si p &lt; 0.</p>`,
+          m10: `<p><b>Idea central:</b> un punto de intersección pertenece a las dos figuras, así que sus coordenadas deben cumplir ambas ecuaciones a la vez.</p>
+                <p><b>Procedimiento:</b> despejá una variable en una ecuación, reemplazala en la otra, resolvé la ecuación resultante y luego calculá la coordenada que falta.</p>
+                <p><b>Cómo interpretar el resultado:</b> una ecuación cuadrática puede dar dos soluciones reales (dos cruces), una (tangencia) o ninguna solución real (no se cortan en el plano).</p>`
+        };
+        function makeVisual(topic) {
+          const wrap = document.getElementById('topic-visuals');
+          if (!wrap) return;
+          const visuals = {
+            m1: `<div class="visual-card"><b>Ejemplo de términos</b><svg viewBox="0 0 300 150" role="img" aria-label="Gráfico de sucesión n al cuadrado"><line x1="25" y1="125" x2="285" y2="125" stroke="currentColor"/><line x1="25" y1="15" x2="25" y2="125" stroke="currentColor"/><polyline points="55,122 95,113 135,98 175,77 215,49 255,15" fill="none" stroke="#0ea5e9" stroke-width="3"/><g fill="#0ea5e9"><circle cx="55" cy="122" r="4"/><circle cx="95" cy="113" r="4"/><circle cx="135" cy="98" r="4"/><circle cx="175" cy="77" r="4"/><circle cx="215" cy="49" r="4"/><circle cx="255" cy="15" r="4"/></g><text x="35" y="143" font-size="10" fill="currentColor">n crece →</text></svg><p class="text-xs">Para aₙ = n², los términos crecen cada vez más rápido.</p></div>`,
+            m2: `<div class="visual-card"><b>Triángulo rectángulo</b><svg viewBox="0 0 300 175" role="img" aria-label="Triángulo con hipotenusa y catetos"><path d="M35 140 L255 140 L255 35 Z" fill="#0ea5e9" fill-opacity=".12" stroke="#0284c7" stroke-width="3"/><path d="M235 140 L235 120 L255 120" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="95" y="158" font-size="12" fill="currentColor">Adyacente</text><text x="262" y="90" font-size="11" fill="currentColor">Opuesto</text><text x="113" y="78" font-size="12" fill="currentColor">Hipotenusa</text><path d="M70 140 A35 35 0 0 0 65 124" fill="none" stroke="#f59e0b" stroke-width="2"/><text x="72" y="128" font-size="12" fill="#f59e0b">α</text></svg><p class="text-xs">Opuesto y adyacente dependen del ángulo α elegido.</p></div>`,
+            m4: `<div class="visual-card"><b>Valor absoluto como distancia</b><svg viewBox="0 0 300 100" role="img" aria-label="Recta numérica de menos cuatro a cuatro"><line x1="20" y1="48" x2="280" y2="48" stroke="currentColor" stroke-width="2"/><g fill="currentColor" font-size="11" text-anchor="middle"><text x="30" y="70">−4</text><text x="95" y="70">−2</text><text x="160" y="70">0</text><text x="225" y="70">2</text><text x="270" y="70">4</text></g><g stroke="currentColor"><path d="M30 40v16 M95 40v16 M160 38v20 M225 40v16 M270 40v16"/></g><path d="M160 28 H30 M160 28 H270" stroke="#0ea5e9" stroke-width="3"/><circle cx="30" cy="48" r="5" fill="#0ea5e9"/><circle cx="270" cy="48" r="5" fill="#0ea5e9"/></svg><p class="text-xs">−4 y 4 están a cuatro unidades del cero: |−4| = |4| = 4.</p></div>`,
+            m6: `<div class="visual-card"><b>Onda periódica</b><svg viewBox="0 0 300 145" role="img" aria-label="Curva sinusoidal"><line x1="15" y1="72" x2="290" y2="72" stroke="currentColor" opacity=".7"/><path d="M15 72 C35 10 55 10 75 72 S115 134 135 72 S175 10 195 72 S235 134 255 72 S275 10 290 40" fill="none" stroke="#0ea5e9" stroke-width="3"/><line x1="15" y1="20" x2="15" y2="125" stroke="currentColor" opacity=".4"/><text x="150" y="140" font-size="11" fill="currentColor" text-anchor="middle">Un período se repite</text></svg><p class="text-xs">La amplitud es la distancia entre el eje medio y un máximo.</p></div>`,
+            m7: `<div class="visual-card"><b>Pendiente de una recta</b><svg viewBox="0 0 300 150" role="img" aria-label="Plano cartesiano con recta creciente"><line x1="25" y1="125" x2="285" y2="125" stroke="currentColor"/><line x1="45" y1="140" x2="45" y2="10" stroke="currentColor"/><path d="M55 120 L260 20" stroke="#0ea5e9" stroke-width="3"/><circle cx="95" cy="100" r="4" fill="#f59e0b"/><circle cx="195" cy="51" r="4" fill="#f59e0b"/><path d="M95 100 H195 V51" stroke="#f59e0b" stroke-dasharray="4 3" fill="none"/><text x="142" y="117" font-size="11" fill="currentColor">Δx</text><text x="202" y="80" font-size="11" fill="currentColor">Δy</text></svg><p class="text-xs">La pendiente es m = Δy/Δx, es decir, cuánto cambia y por cada cambio en x.</p></div>`,
+            m8: `<div class="visual-card"><b>Centro y radio</b><svg viewBox="0 0 300 165" role="img" aria-label="Circunferencia con centro y radio"><line x1="20" y1="85" x2="280" y2="85" stroke="currentColor" opacity=".6"/><line x1="150" y1="10" x2="150" y2="155" stroke="currentColor" opacity=".6"/><circle cx="150" cy="85" r="52" fill="#0ea5e9" fill-opacity=".1" stroke="#0284c7" stroke-width="3"/><circle cx="150" cy="85" r="4" fill="#f59e0b"/><line x1="150" y1="85" x2="202" y2="85" stroke="#f59e0b" stroke-width="3"/><text x="157" y="76" font-size="11" fill="currentColor">C</text><text x="174" y="103" font-size="11" fill="currentColor">r</text></svg><p class="text-xs">Todos los puntos de la circunferencia están a la misma distancia r del centro.</p></div>`,
+            m9: `<div class="visual-card"><b>Elementos de una parábola</b><svg viewBox="0 0 300 165" role="img" aria-label="Parábola vertical con vértice y foco"><line x1="20" y1="75" x2="280" y2="75" stroke="currentColor" opacity=".5"/><line x1="150" y1="10" x2="150" y2="155" stroke="currentColor" opacity=".5"/><path d="M80 20 Q150 220 220 20" fill="none" stroke="#0ea5e9" stroke-width="3"/><circle cx="150" cy="75" r="4" fill="#f59e0b"/><circle cx="150" cy="105" r="4" fill="#ef4444"/><text x="160" y="70" font-size="11" fill="currentColor">V</text><text x="160" y="120" font-size="11" fill="currentColor">F</text></svg><p class="text-xs">El foco se encuentra a distancia |p| del vértice sobre el eje de simetría.</p></div>`,
+            m10: `<div class="visual-card"><b>Intersección de dos curvas</b><svg viewBox="0 0 300 165" role="img" aria-label="Recta y parábola que se cortan"><line x1="20" y1="130" x2="285" y2="130" stroke="currentColor" opacity=".6"/><line x1="45" y1="150" x2="45" y2="10" stroke="currentColor" opacity=".6"/><path d="M60 25 Q150 230 265 25" fill="none" stroke="#0ea5e9" stroke-width="3"/><path d="M55 140 L260 25" fill="none" stroke="#f59e0b" stroke-width="3"/><circle cx="85" cy="123" r="4" fill="#ef4444"/><circle cx="220" cy="47" r="4" fill="#ef4444"/></svg><p class="text-xs">Los puntos de cruce cumplen las dos ecuaciones simultáneamente.</p></div>`,
+            m3: `<div class="visual-card"><b>De √50 a 5√2</b><svg viewBox="0 0 300 115" role="img" aria-label="Descomposición de raíz cuadrada"><rect x="12" y="20" width="80" height="48" rx="9" fill="#0ea5e9" fill-opacity=".16" stroke="#0284c7"/><rect x="110" y="20" width="75" height="48" rx="9" fill="#0ea5e9" fill-opacity=".16" stroke="#0284c7"/><rect x="203" y="20" width="85" height="48" rx="9" fill="#10b981" fill-opacity=".16" stroke="#059669"/><g font-size="13" fill="currentColor" text-anchor="middle"><text x="52" y="49">√50</text><text x="147" y="49">√25·2</text><text x="245" y="49">5√2</text></g><path d="M92 44 H106 M185 44 H199" stroke="currentColor" stroke-width="2"/><text x="150" y="95" font-size="11" fill="currentColor" text-anchor="middle">Separá el cuadrado perfecto</text></svg><p class="text-xs">Extraer factores simplifica la expresión sin cambiar su valor.</p></div>`,
+            m5: `<div class="visual-card"><b>Parte entera: escalones</b><svg viewBox="0 0 300 145" role="img" aria-label="Gráfico escalonado de la función parte entera"><line x1="15" y1="115" x2="285" y2="115" stroke="currentColor" opacity=".6"/><path d="M25 105 H80 V80 H135 V55 H190 V30 H245" fill="none" stroke="#0ea5e9" stroke-width="3"/><g fill="#0ea5e9"><circle cx="80" cy="105" r="4"/><circle cx="135" cy="80" r="4"/><circle cx="190" cy="55" r="4"/></g><g fill="currentColor" font-size="10"><text x="35" y="130">0</text><text x="90" y="130">1</text><text x="145" y="130">2</text><text x="200" y="130">3</text></g></svg><p class="text-xs">Cada escalón incluye el extremo izquierdo y excluye el derecho.</p></div>`
+          };
+          wrap.innerHTML = visuals[topic.id] || '';
+        }
+
+        function selectTopic(id) {
+            activeTopicId = id;
+            const topic = topics.find(t => t.id === id);
+            if (!topic) return;
+
+            document.getElementById('topic-unit').innerText = topic.unit;
+            document.getElementById('topic-title').innerText = topic.title;
+            statusSelector.value = topic.status || 'por_empezar';
+
+            // Theory
+            document.getElementById('theory-text').innerHTML = topic.theory;
+            const guide = document.getElementById('expanded-guide-content');
+            if (guide) guide.innerHTML = expandedGuides[topic.id] || '<p>Leé la teoría, identificá los datos del problema y comprobá cada paso.</p>';
+            makeVisual(topic);
+            
+            // Formulas
+            const formulasContainer = document.getElementById('formulas-list');
+            formulasContainer.innerHTML = '';
+            if (topic.formulas && topic.formulas.length > 0) {
+                topic.formulas.forEach(f => {
+                    const box = document.createElement('div');
+                    box.className = 'bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700/60 shadow-sm flex flex-col justify-center items-center text-center';
+                    box.innerHTML = `
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">${f.name}</span>
+                        <div class="text-sm font-mono text-brand-700 dark:text-brand-300">$$${f.formula}$$</div>
+                    `;
+                    formulasContainer.appendChild(box);
+                });
+            }
+
+            // Examples
+            const examplesContainer = document.getElementById('examples-list');
+            examplesContainer.innerHTML = '';
+            if (topic.examples && topic.examples.length > 0) {
+                topic.examples.forEach((ex, idx) => {
+                    const exCard = document.createElement('div');
+                    exCard.className = 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm';
+                    let stepsHtml = ex.steps.map(step => `
+                        <div class="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-700/40 text-sm">
+                            ${step}
+                        </div>
+                    `).join('');
+
+                    exCard.innerHTML = `
+                        <div class="p-5 border-b border-slate-100 dark:border-slate-700/50">
+                            <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 mb-2">Ejemplo ${idx + 1}</span>
+                            <h3 class="font-bold text-base">${ex.title}</h3>
+                            <div class="mt-2 text-sm text-slate-600 dark:text-slate-300">${ex.statement}</div>
+                        </div>
+                        <details class="group p-4 bg-slate-50/50 dark:bg-slate-800/50">
+                            <summary class="cursor-pointer font-medium text-sm text-brand-600 dark:text-brand-400 flex items-center gap-2 select-none">
+                                <i class="fa-solid fa-chevron-right group-open:rotate-90 transition-transform"></i>
+                                <span>Ver solución paso a paso</span>
+                            </summary>
+                            <div class="mt-4 space-y-3 pl-2">${stepsHtml}</div>
+                        </details>
+                    `;
+                    examplesContainer.appendChild(exCard);
+                });
+            }
+
+            // Practice
+            const practiceContainer = document.getElementById('practice-list');
+            practiceContainer.innerHTML = '';
+            if (topic.practice && topic.practice.length > 0) {
+                topic.practice.forEach((p, idx) => {
+                    const pCard = document.createElement('div');
+                    pCard.className = 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4';
+                    pCard.innerHTML = `
+                        <div class="flex items-start justify-between gap-2">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300">Ejercicio ${idx + 1}</span>
+                        </div>
+                        <div class="text-sm font-medium text-slate-800 dark:text-slate-200">${p.question}</div>
+                        
+                        <details class="group pt-2">
+                            <summary class="cursor-pointer text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-2 select-none">
+                                <i class="fa-solid fa-eye text-xs"></i>
+                                <span>Ver Solución / Respuesta</span>
+                            </summary>
+                            <div class="mt-3 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 text-xs sm:text-sm text-emerald-900 dark:text-emerald-300">
+                                ${p.solution}
+                            </div>
+                        </details>
+                    `;
+                    practiceContainer.appendChild(pCard);
+                });
+            }
+
+            renderMath();
+            renderTopicsList();
+        }
+
+        function renderMath() {
+            setTimeout(() => {
+                renderMathInElement(document.getElementById('content-container'), {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false},
+                        {left: '\\[', right: '\\]', display: true}
+                    ],
+                    throwOnError: false
+                });
+            }, 50);
+        }
+
+        // Tabs Switching
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
+        });
+
+        function switchTab(tabName) {
+            activeTab = tabName;
+            tabBtns.forEach(b => {
+                if (b.getAttribute('data-tab') === tabName) {
+                    b.className = 'tab-btn flex-1 py-2.5 px-4 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-all bg-white dark:bg-slate-700 text-brand-600 dark:text-white shadow-sm';
+                } else {
+                    b.className = 'tab-btn flex-1 py-2.5 px-4 rounded-xl text-sm font-medium flex items-center justify-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all';
+                }
+            });
+
+            tabContents.forEach(content => {
+                if (content.id === `tab-${tabName}`) content.classList.remove('hidden');
+                else content.classList.add('hidden');
+            });
+        }
+
+        document.getElementById('btn-prev-tab').addEventListener('click', () => {
+            if (activeTab === 'practice') switchTab('examples');
+            else if (activeTab === 'examples') switchTab('theory');
+        });
+
+        document.getElementById('btn-next-tab').addEventListener('click', () => {
+            if (activeTab === 'theory') switchTab('examples');
+            else if (activeTab === 'examples') switchTab('practice');
+        });
+
+        statusSelector.addEventListener('change', (e) => {
+            const topic = topics.find(t => t.id === activeTopicId);
+            if (topic) {
+                topic.status = e.target.value;
+                saveTopics();
+                renderTopicsList();
+            }
+        });
+
+        function updateProgress() {
+            const total = topics.length;
+            const done = topics.filter(t => t.status === 'dominado').length;
+            document.getElementById('progress-stat').innerText = `${done}/${total} Dominados`;
+        }
+
+        // Search Engine
+        globalSearch.addEventListener('input', (e) => {
+            const q = e.target.value.toLowerCase().trim();
+            if (!q) { searchResults.classList.add('hidden'); return; }
+
+            const matches = topics.filter(t => 
+                t.title.toLowerCase().includes(q) || 
+                t.theory.toLowerCase().includes(q) ||
+                t.unit.toLowerCase().includes(q)
+            );
+
+            if (matches.length > 0) {
+                searchResults.innerHTML = matches.map(m => `
+                    <div onclick="selectSearchResult('${m.id}')" class="p-3 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer border-b border-slate-100 dark:border-slate-700/50 last:border-0">
+                        <div class="text-xs font-semibold text-brand-500">${m.unit}</div>
+                        <div class="text-sm font-medium">${m.title}</div>
+                    </div>
+                `).join('');
+                searchResults.classList.remove('hidden');
+            } else {
+                searchResults.innerHTML = `<div class="p-3 text-xs text-slate-400 text-center">Sin resultados</div>`;
+                searchResults.classList.remove('hidden');
+            }
+        });
+
+        window.selectSearchResult = function(id) {
+            searchResults.classList.add('hidden');
+            globalSearch.value = '';
+            selectTopic(id);
+        };
+
+        // Flashcard Logic
+        function renderFlashcard() {
+            const card = flashcardsList[currentFlashcardIdx];
+            document.getElementById('fc-question').innerText = card.q;
+            document.getElementById('fc-answer').innerText = card.a;
+            document.getElementById('fc-answer').classList.add('hidden');
+            document.getElementById('fc-counter').innerText = `${currentFlashcardIdx + 1} / ${flashcardsList.length}`;
+        }
+
+        document.getElementById('btn-open-flashcards').addEventListener('click', () => {
+            currentFlashcardIdx = 0;
+            renderFlashcard();
+            flashcardModal.classList.remove('hidden');
+        });
+        document.getElementById('btn-close-flashcards').addEventListener('click', () => flashcardModal.classList.add('hidden'));
+        document.getElementById('flashcard-card').addEventListener('click', () => {
+            document.getElementById('fc-answer').classList.toggle('hidden');
+        });
+        document.getElementById('fc-next').addEventListener('click', () => {
+            if (currentFlashcardIdx < flashcardsList.length - 1) {
+                currentFlashcardIdx++;
+                renderFlashcard();
+            }
+        });
+        document.getElementById('fc-prev').addEventListener('click', () => {
+            if (currentFlashcardIdx > 0) {
+                currentFlashcardIdx--;
+                renderFlashcard();
+            }
+        });
+
+        // Calculator Logic
+        const calcScreen = document.getElementById('calc-screen');
+        document.getElementById('btn-open-calc').addEventListener('click', () => calcModal.classList.toggle('hidden'));
+        document.getElementById('btn-close-calc').addEventListener('click', () => calcModal.classList.add('hidden'));
+        document.querySelectorAll('.calc-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const act = btn.getAttribute('data-act');
+                const val = btn.getAttribute('data-val');
+                if (act === 'clear') calcScreen.value = '0';
+                else if (act === 'append') {
+                    if (calcScreen.value === '0') calcScreen.value = val;
+                    else calcScreen.value += val;
+                } else if (act === 'eval') {
+                    try {
+                        const expr = calcScreen.value.replace(/\s+/g, '').replace(/\^/g, '**');
+                        if (!/^[0-9+\-*/().*]+$/.test(expr)) throw new Error('Expresión no válida');
+                        const value = Function('"use strict"; return (' + expr + ')')();
+                        if (!Number.isFinite(value)) throw new Error('Resultado no válido');
+                        calcLastAnswer = value;
+                        calcScreen.value = String(Number(value.toPrecision(12)));
+                    } catch(err) { calcScreen.value = 'Error'; }
+                }
+            });
+        });
+
+        let calcLastAnswer = 0;
+        document.querySelectorAll('.calc-sci').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const screen = document.getElementById('calc-screen');
+                const value = Number(screen.value);
+                const fn = btn.dataset.fn;
+                try {
+                    if (fn === 'pi') screen.value = String(Math.PI);
+                    else if (fn === 'ans') screen.value = String(calcLastAnswer);
+                    else {
+                        if (!Number.isFinite(value) || screen.value === 'Error') throw new Error();
+                        let result;
+                        if (fn === 'sqrt') result = Math.sqrt(value);
+                        if (fn === 'square') result = value * value;
+                        if (fn === 'sin') result = Math.sin(value * Math.PI / 180);
+                        if (fn === 'cos') result = Math.cos(value * Math.PI / 180);
+                        if (fn === 'tan') result = Math.tan(value * Math.PI / 180);
+                        if (fn === 'log') result = Math.log10(value);
+                        if (fn === 'ln') result = Math.log(value);
+                        if (fn === 'abs') result = Math.abs(value);
+                        if (!Number.isFinite(result)) throw new Error();
+                        calcLastAnswer = result;
+                        screen.value = String(Number(result.toPrecision(12)));
+                    }
+                } catch(e) { screen.value = 'Error'; }
+            });
+        });
+
+        // Theme and Sidebar Toggles
+        themeToggle.addEventListener('click', () => document.documentElement.classList.toggle('dark'));
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        document.getElementById('toggle-sidebar').addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarOverlay.classList.toggle('hidden');
+        });
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            sidebarOverlay.classList.add('hidden');
+        });
+
+        window.onload = init;
+    </script>
+</body>
+</html>
